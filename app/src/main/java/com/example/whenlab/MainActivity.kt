@@ -35,13 +35,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.whenlab.ui.theme.WhenLabTheme
 
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Включаем отображение во весь экран (edge-to-edge)
         enableEdgeToEdge()
+        // Устанавливаем интерфейс на Compose
         setContent {
             WhenLabTheme {
+                // Scaffold создает базовую структуру экрана с поддержкой системных отступов
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    // Вызываем наш главный Composable-экран
                     Variant7Screen(modifier = Modifier.padding(innerPadding))
                 }
             }
@@ -49,34 +54,45 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// Главный Composable-компонент Вариант 7
 @Composable
 fun Variant7Screen(modifier: Modifier = Modifier) {
+    // Храним текст, введенный пользователем в поле ввода
     var inputText by remember { mutableStateOf("") }
+    
+    // Храним результат проверки или текст ошибки
     var resultText by remember { mutableStateOf("") }
+    
+    // true - если введен некорректный символ, false - если всё верно
     var isError by remember { mutableStateOf(false) }
 
+    // Главная Column - выравнивает содержимое по центру экрана
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .fillMaxSize() // Занимаем всю доступную ширину и высоту
+            .padding(16.dp), // Внешний отступ от краев экрана
+        horizontalAlignment = Alignment.CenterHorizontally, // Выравнивание по горизонтали по центру
+        verticalArrangement = Arrangement.Center // Выравнивание по вертикали по центру
     ) {
+        // Карточка
         Card(
-            modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+            modifier = Modifier.fillMaxWidth(), // Карточка растягивается по ширине
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp) // Тень карточки
         ) {
+            //  Column для элементов внутри карточки
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp),
+                    .padding(20.dp), //  отступы внутри карточки
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
                 Text(
                     text = "Лабораторная работа №1",
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.secondary
                 )
+
 
                 Text(
                     text = "Вариант 7: Проверка символа",
@@ -85,36 +101,49 @@ fun Variant7Screen(modifier: Modifier = Modifier) {
                     textAlign = TextAlign.Center
                 )
 
+                // Отступ по вертикали между заголовком и полем ввода
                 Spacer(modifier = Modifier.height(20.dp))
 
+                // Поле ввода символа
                 OutlinedTextField(
-                    value = inputText,
-                    onValueChange = {
-                        inputText = it
+                    value = inputText, // Значение в поле связано с переменной inputText
+                    onValueChange = { newValue ->
+                        // При каждом изменении текста обновляем inputText
+                        inputText = newValue
+                        // Сбрасываем результат и ошибку при вводе нового символа
                         resultText = ""
                         isError = false
                     },
-                    label = { Text("Введите символ") },
-                    isError = isError,
-                    singleLine = true
+                    label = { Text("Введите символ") }, // Подпись над полем ввода
+                    isError = isError, // Если true, рамка подсвечивается красным
+                    singleLine = true // Ограничиваем ввод одной строкой
                 )
 
+                // Отступ между полем ввода и кнопками
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Row (строка) - располагает кнопки горизонтально рядом друг с другом
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp), // Расстояние между кнопками
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Кнопка для запуска проверки
                     Button(
                         onClick = {
+                            // 1. Проверяем с помощью условия if:
+                            // - Длина строки должна быть ровно 1 символ
+                            // - Символ должен быть заглавной латинской буквой от 'A' до 'Z'
                             if (inputText.length != 1 || inputText[0] !in 'A'..'Z') {
                                 isError = true
                                 resultText = "Ошибка: введенный символ не является латинской прописной буквой!"
                             } else {
+                                // 2. Если условие выполнено, анализируем символ через оператор when
                                 isError = false
                                 val char = inputText[0]
                                 resultText = when (char) {
+                                    // Если это одна из букв L, M, K, D
                                     'L', 'M', 'K', 'D' -> "Это согласные буквы"
+                                    // Для остальных заглавных латинских букв
                                     else -> "Возможно, это гласные буквы"
                                 }
                             }
@@ -123,6 +152,7 @@ fun Variant7Screen(modifier: Modifier = Modifier) {
                         Text("Проверить")
                     }
 
+                    // Кнопка для сброса введенных данных
                     OutlinedButton(
                         onClick = {
                             inputText = ""
@@ -134,11 +164,13 @@ fun Variant7Screen(modifier: Modifier = Modifier) {
                     }
                 }
 
+                // Вывод результата проверки (отображается, только если resultText не пустой)
                 if (resultText.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Text(
                         text = resultText,
+                        // Если ошибка - выводим красным цветом, иначе - темно-зеленым
                         color = if (isError) Color.Red else Color(0xFF2E7D32),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Medium,
@@ -150,6 +182,7 @@ fun Variant7Screen(modifier: Modifier = Modifier) {
     }
 }
 
+// Предпросмотр интерфейса
 @Preview(showBackground = true)
 @Composable
 fun Variant7ScreenPreview() {
