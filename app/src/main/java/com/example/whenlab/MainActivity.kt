@@ -6,11 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -61,19 +63,44 @@ fun Variant7Screen(modifier: Modifier = Modifier) {
 
         OutlinedTextField(
             value = inputText,
-            onValueChange = { inputText = it },
+            onValueChange = {
+                inputText = it
+                resultText = ""
+            },
             label = { Text("Введите символ") },
             singleLine = true
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = {
-                // Логика проверки будет добавлена на следующем этапе
-            }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Проверить")
+            Button(
+                onClick = {
+                    if (inputText.length != 1 || inputText[0] !in 'A'..'Z') {
+                        resultText = "Ошибка: введенный символ не является латинской прописной буквой!"
+                    } else {
+                        val char = inputText[0]
+                        resultText = when (char) {
+                            'L', 'M', 'K', 'D' -> "Это согласные буквы"
+                            else -> "Возможно, это гласные буквы"
+                        }
+                    }
+                }
+            ) {
+                Text("Проверить")
+            }
+
+            OutlinedButton(
+                onClick = {
+                    inputText = ""
+                    resultText = ""
+                }
+            ) {
+                Text("Очистить")
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
