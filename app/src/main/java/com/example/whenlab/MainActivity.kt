@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,6 +47,7 @@ class MainActivity : ComponentActivity() {
 fun Variant7Screen(modifier: Modifier = Modifier) {
     var inputText by remember { mutableStateOf("") }
     var resultText by remember { mutableStateOf("") }
+    var isError by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -66,8 +68,10 @@ fun Variant7Screen(modifier: Modifier = Modifier) {
             onValueChange = {
                 inputText = it
                 resultText = ""
+                isError = false
             },
             label = { Text("Введите символ") },
+            isError = isError,
             singleLine = true
         )
 
@@ -80,8 +84,10 @@ fun Variant7Screen(modifier: Modifier = Modifier) {
             Button(
                 onClick = {
                     if (inputText.length != 1 || inputText[0] !in 'A'..'Z') {
+                        isError = true
                         resultText = "Ошибка: введенный символ не является латинской прописной буквой!"
                     } else {
+                        isError = false
                         val char = inputText[0]
                         resultText = when (char) {
                             'L', 'M', 'K', 'D' -> "Это согласные буквы"
@@ -97,6 +103,7 @@ fun Variant7Screen(modifier: Modifier = Modifier) {
                 onClick = {
                     inputText = ""
                     resultText = ""
+                    isError = false
                 }
             ) {
                 Text("Очистить")
@@ -108,6 +115,7 @@ fun Variant7Screen(modifier: Modifier = Modifier) {
         if (resultText.isNotEmpty()) {
             Text(
                 text = resultText,
+                color = if (isError) Color.Red else Color(0xFF2E7D32),
                 fontSize = 18.sp
             )
         }
